@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -19,20 +20,32 @@ class RegisterType extends AbstractType
         $builder
             ->add('firstname', TextType::class, [
                 'label' => 'Votre Prénom',
+                'constraints' => new Length([
+                'min' => 2,
+                'max' =>60,
+                ]),
                 'attr' => [
-                    'placeholder' => 'Merci de saisir votre prénom'
+                'placeholder' => 'Merci de saisir votre prénom'
                 ]
             ])
             ->add('lastname', TextType::class, [
                 'label' => 'Votre Nom',
+                'constraints' => new Length([
+                    'min' => 2,
+                    'max' =>60,
+                ]),    
                 'attr' => [
-                    'placeholder' => 'Merci de saisir votre nom'
+                'placeholder' => 'Merci de saisir votre nom'
                 ]
             ])
             ->add('email', EmailType::class, [
                 'label' => 'Votre Email',
+                'constraints' => new Length([
+                'min' => 2,
+                'max' =>60,
+                ]),
                 'attr' => [
-                    'placeholder' => 'Merci de saisir votre email'
+                'placeholder' => 'Merci de saisir votre email'
                 ]
             ])
             
@@ -42,15 +55,15 @@ class RegisterType extends AbstractType
                 'label' => 'Votre mot de passe',
                 'required' => true,
                 'first_options' => [
-                    'label' => 'Mot de passe',
-                    'attr' => [
-                        'placeholder' => 'Merci de saisir votre mot de passe'
+                'label' => 'Mot de passe',
+                'attr' => [
+                'placeholder' => 'Merci de saisir votre mot de passe'
                     ]
                 ],
-                'second_options' => [
+                    'second_options' => [
                     'label' => 'Confirmez votre mot de passe',
                     'attr' => [
-                        'placeholder' => 'Merci de confirmer votre mot de passe'
+                    'placeholder' => 'Merci de confirmer votre mot de passe'
                     ]
                 ]
             ])
