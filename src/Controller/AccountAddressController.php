@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Classe\Cart;
 use App\Entity\Address;
 use App\Form\AddressType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -37,7 +38,7 @@ class AccountAddressController extends AbstractController
 
 
     #[Route('/compte/ajouter-une-adresse', name: 'app_account_address_add')]
-    public function add(Request $request): Response
+    public function add(Cart $cart, Request $request): Response
     {
         $address = new Address;
         $form = $this->createForm(AddressType::class, $address);
@@ -59,7 +60,13 @@ class AccountAddressController extends AbstractController
             //Execute
             $this->entityManager->flush();
 
-            return $this->redirectToRoute('app_account_address');
+            // S'il y a un produit dans le panier
+            if ($cart->get()) {
+                // JE redirige vers commande
+                return $this->redirectToRoute('app_order');
+            } else {
+                return $this->redirectToRoute('app_account_address');
+            }
         }
 
         return $this->render('account/address_form.html.twig',[
@@ -71,7 +78,7 @@ class AccountAddressController extends AbstractController
     public function edit(Request $request,$id): Response
     {
         // je recupere l'adresse dans la basse de donne grace a entity manager
-        // et c'est grace a doctrine que je peut requper l'adreese grace a l'id
+        // et c'est grace a doctrine que je peut recuperer l'adreese grace a l'id
         $address = $this->entityManager->getRepository(Address::class)->findOneById($id);
 
         // si 
@@ -96,6 +103,8 @@ class AccountAddressController extends AbstractController
            
             //Execute
             $this->entityManager->flush();
+
+            
 
             return $this->redirectToRoute('app_account_address');
         }

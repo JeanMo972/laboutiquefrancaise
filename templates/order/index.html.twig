@@ -9,8 +9,17 @@
     <p>Choissisez vos préferences avant de passer votre commande sur La Boutique Française</p>
 <div class="row">
     <div class="col-md-6">
+
+    {% block body %}
+        
+    {% endblock %}
     <b>Choisir mon adresse de livraison</b><br>
+    {% set formHtml %}
+    {{ form(form) }}
+    {% endset %} 
+    {{formHtml|replace({'[br]':'<br>'})|raw}}   
     <b>CHoisir mon transporteur</b>
+    
     </div>
     <div class="col-md-6">
     <b>Récap de ma commande</b><br>
