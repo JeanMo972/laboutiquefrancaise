@@ -16,21 +16,20 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class OrderController extends AbstractController
 {
 
-    
-    #[Route('/commande', name: 'app_order')]
-
     private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
     }
+
+    #[Route('/commande', name: 'app_order')]
     public function index(Cart $cart, Request $request ): Response
 
    
     {
           // Si l'utilisateur n'a pas d'adresses ALORS
-        if (!$this->getUser()->getAdresses()->getValues()) {
+        if (!$this->getUser()->getAddresses()->getValues()) {
             // On le redirige vers la page d'ajout d'adresse
         return $this->redirectToRoute('app_account_address_add');
     }
@@ -40,7 +39,8 @@ class OrderController extends AbstractController
         ]);
 
         return $this->render('order/index.html.twig',[
-        'cart' =>$cart->getFull()
+            'form' =>$form->createView(),
+            'cart' =>$cart->getFull()
 
    
         ]);
@@ -53,7 +53,7 @@ class OrderController extends AbstractController
    
     {
           // Si l'utilisateur n'a pas d'adresses ALORS
-        if (!$this->getUser()->getAddresses()->getValues()) {
+        if (!$this->getUser()) {
             // On le redirige vers la page d'ajout d'adresse
         return $this->redirectToRoute('app_account_address_add');
     }
@@ -121,19 +121,23 @@ class OrderController extends AbstractController
             $this->entityManager->persist($orderDetails);
 
             //dd($product);
+            }
+
+            //enregistre la commande en base de commande dans orderDetails
+            //$this->entityManager->flush();
+
+            return $this->render('order/add.html.twig',[
+                'cart' =>$cart->getFull(),//affiche le panier complet
+                'carrier' => $carriers,
+                'delivery' => $delivery_content,
+        
+                ]);
 
             }
 
-            //enregistre la commande en base de commande
-            $this->entityManager->flush();
-
-            }
-
-            return $this->render('order/index.html.twig',[
-            'form' =>$form->createView(),
-            'cart' =>$cart->getFull()
-
-    
-            ]);
+            
+            return $this->redirectToRoute('app_cart');
+            
         }
+     
     }
