@@ -98,7 +98,8 @@ class Cart
 
                 $cartComplete[] = [
                 'product' => $product_object,
-                'quantity' => $quantity
+                'quantity' => $quantity,
+                
                 ];
             } 
         }
