@@ -124,7 +124,7 @@ class OrderController extends AbstractController
             }
 
             //enregistre la commande en base de commande dans orderDetails
-            //$this->entityManager->flush();
+            $this->entityManager->flush();
 
             return $this->render('order/add.html.twig',[
                 'cart' =>$cart->getFull(),//affiche le panier complet
