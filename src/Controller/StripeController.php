@@ -13,7 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class StripeController extends AbstractController
 {
 
-    #[Route('/commmande/create-session', name: 'sripe_create_session')]
+    #[Route('/commmande/create-session', name: 'stripe_create_session')]
     public function index(Cart $cart): Response
     {
         
@@ -30,7 +30,7 @@ class StripeController extends AbstractController
                     'unit_amount' => $product['product']->getPrice(),
                     'product_data' => [
                         'name' => $product['product']->getName(),
-                        'images' => ["http://127.0.0.1:8000/public"],
+                        'images' => ["http://127.0.0.1:8000/public/uploads"],
                     ],
                  ],
                 'quantity' => ($product['quantity'])
@@ -38,9 +38,23 @@ class StripeController extends AbstractController
             ];
 
         }
-        
+
+        //transporteur
+        //$products_for_stripe[]= [ //permet d'afficher le transporteur avant payment
+            //'price_data' => [
+                //'currency' => 'eur',
+                //'unit_amount' => $product['product']->getPrice(),
+                //'product_data' => [
+                    //'name' => $product['product']->getName(),
+                    //'images' => ["http://127.0.0.1:8000/public/uploads"],
+                //],
+             //],
+            //'quantity' => ($product['quantity'])
+
+        //];
+            
              // This is your test secret API key.
-            Stripe::setApiKey('sk_test_51LieLtLv8IqE4Bc33y5pBGo6yAejtL8r2dWK2dYNIWdtsoberogQoaAVJUR87Eo2P8qWvpjQbkLGvpHqoWmv8CQC002PvXPEkR');
+            Stripe::setApiKey('sk_test_51LieBcK9e2s2wv9Gi1NS8b76qXmJ6xCJk5CSUfVvlCqK9IdYn4CFmeRxgt8lOmKbFWUK3vtarSS76Zhs8APlKni400ZjmaraJV');
 
             $checkout_session = Session::create([
             'payment_method_types' => ['card'],
@@ -50,8 +64,8 @@ class StripeController extends AbstractController
 
             ],
             'mode' => 'payment',
-            'success_url' => $YOUR_DOMAIN . '/success.html',
-            'cancel_url' => $YOUR_DOMAIN . '/cancel.html',
+            'success_url' => $YOUR_DOMAIN . '/commande/merci/{CHECKOUT_SESSION_ID}',
+            'cancel_url' => $YOUR_DOMAIN . '/commande/erreur/{CHECKOUT_SESSION_ID}',
           ]);
 
           //$response = new JsonResponse(['id' => $checkout_session->id]);

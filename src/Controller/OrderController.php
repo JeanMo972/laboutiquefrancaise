@@ -107,8 +107,11 @@ class OrderController extends AbstractController
             
             //enregistrer mes produits OrderDetails()pour chaque produit que j'ai dans mon panier
             foreach ($cart->getFull() as $product) {
-
+            //Enregistrer ma commande(**Order()**)
             $orderDetails = new OrderDetails();
+
+            $reference = $date->format('dmY').'-'.uniqid();
+            $order->setReference($reference);
 
             $orderDetails->setMyOrder($order);
             $orderDetails->setProduct($product['product']->getName());
@@ -125,11 +128,14 @@ class OrderController extends AbstractController
 
             //enregistre la commande en base de commande dans orderDetails
             $this->entityManager->flush();
-            
+
+            //dd($order);         
+
             return $this->render('order/add.html.twig',[
                 'cart' =>$cart->getFull(),//affiche le panier complet
                 'carrier' => $carriers,
                 'delivery' => $delivery_content,
+                'reference' => $order->getReference(),
                
                 ]);
 
