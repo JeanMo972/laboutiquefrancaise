@@ -52,14 +52,7 @@ class OrderController extends AbstractController
         methods:'POST')]
         public function add(Cart $cart, Request $request): Response
 
-   
     {
-          // Si l'utilisateur n'a pas d'adresses ALORS
-        if (!$this->getUser()) {
-            // On le redirige vers la page d'ajout d'adresse
-        return $this->redirectToRoute('app_account_address_add');
-    }
-
         $form = $this->createForm(OrderType::class, null, [
             'user' => $this->getUser()
         ]);
@@ -67,52 +60,59 @@ class OrderController extends AbstractController
         // Ecoute la requête
         $form->handleRequest($request);
 
+        // Si l'utilisateur n'a pas d'adresses ALORS
+        if (!$this->getUser()) {
+            // On le redirige vers la page d'ajout d'adresse
+        return $this->redirectToRoute('app_account_address_add');
+        }
         // SI le formulaire est soumis ET le formulaire est valide ALORS
         if ($form->isSubmitted() && $form->isValid()) {
 
-        //{dd($form->getData()); 
-
-            $order = new Order();
             $date = new DateTime;
-            $carriers = $form->get('carriers')->getData();//soumet les data carriers
+
+        //{dd($form->getData()); 
+        $carriers = $form->get('carriers')->getData();//soumet les data carriers
 
         //dd($carriers);
 
-            //enregistrer  
-            $delivery = $form->get('addresses')->getData();
-            $delivery_content = $delivery->getFirstname().' '.$delivery->getLastname();
-            $delivery_content .= '<br>'.$delivery->getPhone();
+        //enregistrer  
+        $delivery = $form->get('addresses')->getData();
+        $delivery_content = $delivery->getFirstname().' '.$delivery->getLastname();
+        $delivery_content .= '<br>'.$delivery->getPhone();
 
-            if ($delivery->getCompagny()) {
-                $delivery_content .= '<br>'.$delivery->getCompany();
-            }
+        if ($delivery->getCompagny()) {
+            $delivery_content .= '<br>'.$delivery->getCompany();
+        }
 
-            $delivery_content .= '<br>'.$delivery->getAddress();
-            $delivery_content .= '<br>'.$delivery->getPostal().' '.$delivery->getCity();
-            $delivery_content .= '<br>'.$delivery->getContry();
+        $delivery_content .= '<br>'.$delivery->getAddress();
+        $delivery_content .= '<br>'.$delivery->getPostal().' '.$delivery->getCity();
+        $delivery_content .= '<br>'.$delivery->getContry();
 
         //dd($delivery_content);
 
         //dd($delivery);
-            //enregistrer ma commande Order()
-            $order->setUser($this->getUser());//enregistre la commande de l'utilisateur en base de donnée
-            $order->setCreatedAt($date);//Date de l'enregistrement la commande de l'utilisateur
-            $order->setCarrierName($carriers->getName());//enregistre le nom du transporteur en base de donnée
-            $order->setCarrierPrice($carriers->getPrice());//enregistre le prix de la livaison en base de donnée;
-            $order->setDelivery($delivery_content);//enregistre l'adresse de livraison en base de donnée
-            $order->setIsPaid(0);//enregistre le paimant en basse de donnée
+        //enregistrer ma commande Order()
+
+        $order= new Order();
+
+        $reference =$date->format('dmY'). '-'.uniqid();
+        $order->setReference($reference);
+
+        $order->setUser($this->getUser());//enregistre la commande de l'utilisateur en base de donnée
+        $order->setCreatedAt($date);//Date de l'enregistrement la commande de l'utilisateur
+        $order->setCarrierName($carriers->getName());//enregistre le nom du transporteur en base de donnée
+        $order->setCarrierPrice($carriers->getPrice());//enregistre le prix de la livaison en base de donnée;
+        $order->setDelivery($delivery_content);//enregistre l'adresse de livraison en base de donnée
+        $order->setIsPaid(0);//enregistre le paimant en basse de donnée
 
             //Fige la DATA(order)
-            $this->entityManager->persist($order);
+        $this->entityManager->persist($order);
             
             //enregistrer mes produits OrderDetails()pour chaque produit que j'ai dans mon panier
             foreach ($cart->getFull() as $product) {
             //Enregistrer ma commande(**Order()**)
             $orderDetails = new OrderDetails();
-
-            $reference = $date->format('dmY').'-'.uniqid();
-            $order->setReference($reference);
-
+            
             $orderDetails->setMyOrder($order);
             $orderDetails->setProduct($product['product']->getName());
             $orderDetails->setQuantity($product['quantity']);
